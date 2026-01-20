@@ -71,7 +71,7 @@ Kore performs complex file operations and system cleaning.
 ![App Screenshot](https://i.postimg.cc/xjkBHbCd/5444ac09-6703-444a-9bc1-4ce0b678f09b.png)
 
 **Fixing DLL issues (Powered by Agent 7)**
-![App Screenshot](https://i.postimg.cc/13KdPGWT/Screenshot-2026-01-18-at-12-36-09-PM.png)
+![App Screenshot](https://i.postimg.cc/QxF5TZ2v/Screenshot-2026-01-20-at-2-27-30-PM.png)
 
 ## Authors
 * [@shauryasuyal](https://github.com/shauryasuyal)
