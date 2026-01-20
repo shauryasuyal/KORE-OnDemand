@@ -1,0 +1,409 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Kore System Query API",
+    "description": "Comprehensive Windows system monitoring and information retrieval API. Provides real-time data about CPU, memory, disk, network, processes, and hardware. Designed for performance monitoring and system diagnostics.",
+    "version": "1.0.0",
+    "contact": {
+      "name": "Kore Development Team",
+      "email": "support@kore-assistant.com"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:5000/api/v1",
+      "description": "Local Kore API Server"
+    }
+  ],
+  "paths": {
+    "/system/info": {
+      "get": {
+        "summary": "Get System Information",
+        "description": "Retrieves comprehensive system information including computer name, username, OS details, CPU specs, memory, disk space, and network configuration. Can request specific categories or all information.",
+        "operationId": "getSystemInfo",
+        "tags": ["System Monitoring"],
+        "parameters": [
+          {
+            "name": "category",
+            "in": "query",
+            "description": "Specific information category to retrieve. Use 'all' for complete system report.",
+            "schema": {
+              "type": "string",
+              "enum": ["all", "basic", "cpu", "memory", "disk", "network", "battery"],
+              "default": "all"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "System information retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "computer_name": {
+                      "type": "string",
+                      "description": "Windows computer name"
+                    },
+                    "username": {
+                      "type": "string",
+                      "description": "Current logged-in user"
+                    },
+                    "os": {
+                      "type": "string",
+                      "description": "Operating system name (e.g., Windows)"
+                    },
+                    "os_version": {
+                      "type": "string",
+                      "description": "OS version details"
+                    },
+                    "architecture": {
+                      "type": "string",
+                      "description": "System architecture (x86, x64, ARM)"
+                    },
+                    "processor": {
+                      "type": "string",
+                      "description": "CPU model name"
+                    },
+                    "cpu_percent": {
+                      "type": "number",
+                      "description": "Current CPU usage percentage"
+                    },
+                    "cpu_count_physical": {
+                      "type": "integer",
+                      "description": "Number of physical CPU cores"
+                    },
+                    "cpu_count_logical": {
+                      "type": "integer",
+                      "description": "Number of logical CPU cores (with hyperthreading)"
+                    },
+                    "cpu_frequency_mhz": {
+                      "type": "number",
+                      "description": "Current CPU frequency in MHz"
+                    },
+                    "memory_total_gb": {
+                      "type": "number",
+                      "description": "Total RAM in gigabytes"
+                    },
+                    "memory_available_gb": {
+                      "type": "number",
+                      "description": "Available RAM in gigabytes"
+                    },
+                    "memory_used_gb": {
+                      "type": "number",
+                      "description": "Used RAM in gigabytes"
+                    },
+                    "memory_percent": {
+                      "type": "number",
+                      "description": "Memory usage percentage"
+                    },
+                    "disk_total_gb": {
+                      "type": "number",
+                      "description": "Total disk space (C: drive) in GB"
+                    },
+                    "disk_used_gb": {
+                      "type": "number",
+                      "description": "Used disk space in GB"
+                    },
+                    "disk_free_gb": {
+                      "type": "number",
+                      "description": "Free disk space in GB"
+                    },
+                    "disk_percent": {
+                      "type": "number",
+                      "description": "Disk usage percentage"
+                    },
+                    "local_ip": {
+                      "type": "string",
+                      "description": "Local network IP address"
+                    },
+                    "bytes_sent_mb": {
+                      "type": "number",
+                      "description": "Network data sent in megabytes"
+                    },
+                    "bytes_recv_mb": {
+                      "type": "number",
+                      "description": "Network data received in megabytes"
+                    },
+                    "battery_percent": {
+                      "type": "number",
+                      "description": "Battery charge percentage (laptops only)",
+                      "nullable": true
+                    },
+                    "battery_plugged": {
+                      "type": "boolean",
+                      "description": "Whether device is charging",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/system/processes": {
+      "get": {
+        "summary": "List Running Processes",
+        "description": "Returns a list of all currently running Windows processes with CPU and memory usage. Can be filtered by name or sorted by resource usage.",
+        "operationId": "listProcesses",
+        "tags": ["System Monitoring"],
+        "parameters": [
+          {
+            "name": "filter",
+            "in": "query",
+            "description": "Filter processes by name (case-insensitive substring match)",
+            "schema": {"type": "string"}
+          },
+          {
+            "name": "sort_by",
+            "in": "query",
+            "description": "Sort processes by specified metric",
+            "schema": {
+              "type": "string",
+              "enum": ["cpu", "memory", "name"],
+              "default": "cpu"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Maximum number of processes to return",
+            "schema": {"type": "integer", "default": 20}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Process list retrieved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "total_processes": {"type": "integer"},
+                    "processes": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "pid": {"type": "integer"},
+                          "name": {"type": "string"},
+                          "cpu_percent": {"type": "number"},
+                          "memory_mb": {"type": "number"},
+                          "status": {"type": "string"},
+                          "username": {"type": "string"}
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/system/performance": {
+      "get": {
+        "summary": "Real-time Performance Metrics",
+        "description": "Provides real-time performance snapshot including CPU, memory, disk I/O, and network activity. Useful for monitoring system health and detecting performance issues.",
+        "operationId": "getPerformanceMetrics",
+        "tags": ["System Monitoring"],
+        "parameters": [
+          {
+            "name": "interval",
+            "in": "query",
+            "description": "Sampling interval in seconds for CPU measurement",
+            "schema": {"type": "number", "default": 1.0}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Performance metrics retrieved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "timestamp": {"type": "string", "format": "date-time"},
+                    "cpu": {
+                      "type": "object",
+                      "properties": {
+                        "overall_percent": {"type": "number"},
+                        "per_core": {
+                          "type": "array",
+                          "items": {"type": "number"}
+                        },
+                        "frequency_current": {"type": "number"},
+                        "frequency_max": {"type": "number"}
+                      }
+                    },
+                    "memory": {
+                      "type": "object",
+                      "properties": {
+                        "percent": {"type": "number"},
+                        "available_gb": {"type": "number"},
+                        "cached_gb": {"type": "number"}
+                      }
+                    },
+                    "disk_io": {
+                      "type": "object",
+                      "properties": {
+                        "read_mb_per_sec": {"type": "number"},
+                        "write_mb_per_sec": {"type": "number"}
+                      }
+                    },
+                    "network": {
+                      "type": "object",
+                      "properties": {
+                        "upload_kb_per_sec": {"type": "number"},
+                        "download_kb_per_sec": {"type": "number"}
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/system/screenshot": {
+      "post": {
+        "summary": "Capture Screenshot",
+        "description": "Takes a screenshot of the entire screen or specific window and saves it to the specified location. Returns the file path of the saved screenshot.",
+        "operationId": "takeScreenshot",
+        "tags": ["System Utilities"],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "save_path": {
+                    "type": "string",
+                    "description": "Path where screenshot should be saved. If not provided, auto-generates filename with timestamp.",
+                    "nullable": true
+                  },
+                  "region": {
+                    "type": "object",
+                    "description": "Capture specific screen region instead of full screen",
+                    "properties": {
+                      "x": {"type": "integer"},
+                      "y": {"type": "integer"},
+                      "width": {"type": "integer"},
+                      "height": {"type": "integer"}
+                    },
+                    "nullable": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Screenshot captured successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {"type": "boolean"},
+                    "file_path": {"type": "string"},
+                    "size_bytes": {"type": "integer"},
+                    "dimensions": {
+                      "type": "object",
+                      "properties": {
+                        "width": {"type": "integer"},
+                        "height": {"type": "integer"}
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/system/health": {
+      "get": {
+        "summary": "System Health Check",
+        "description": "Performs a comprehensive health check of the system, detecting potential issues like high CPU usage, low disk space, memory pressure, or unusual process activity. Returns warnings and recommendations.",
+        "operationId": "healthCheck",
+        "tags": ["System Monitoring"],
+        "responses": {
+          "200": {
+            "description": "Health check completed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "overall_status": {
+                      "type": "string",
+                      "enum": ["healthy", "warning", "critical"]
+                    },
+                    "cpu_status": {
+                      "type": "object",
+                      "properties": {
+                        "status": {"type": "string"},
+                        "usage_percent": {"type": "number"},
+                        "message": {"type": "string"}
+                      }
+                    },
+                    "memory_status": {
+                      "type": "object",
+                      "properties": {
+                        "status": {"type": "string"},
+                        "usage_percent": {"type": "number"},
+                        "message": {"type": "string"}
+                      }
+                    },
+                    "disk_status": {
+                      "type": "object",
+                      "properties": {
+                        "status": {"type": "string"},
+                        "free_gb": {"type": "number"},
+                        "message": {"type": "string"}
+                      }
+                    },
+                    "recommendations": {
+                      "type": "array",
+                      "items": {"type": "string"}
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "ApiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-API-Key",
+        "description": "API key for authenticating requests to Kore System Query API"
+      }
+    }
+  },
+  "security": [{"ApiKeyAuth": []}],
+  "tags": [
+    {
+      "name": "System Monitoring",
+      "description": "System information and performance monitoring endpoints"
+    },
+    {
+      "name": "System Utilities",
+      "description": "Utility functions like screenshots and diagnostics"
+    }
+  ]
+}

@@ -1,0 +1,314 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Kore Windows Control API",
+    "description": "Custom OpenAPI tool for controlling Windows applications, desktop icons, and system operations. Designed for OnDemand agent integration with Kore desktop assistant.",
+    "version": "1.0.0",
+    "contact": {
+      "name": "Kore Development Team",
+      "email": "support@kore-assistant.com"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:5000/api/v1",
+      "description": "Local Kore API Server"
+    }
+  ],
+  "paths": {
+    "/windows/open-app": {
+      "post": {
+        "summary": "Open Windows Application",
+        "description": "Opens any installed Windows application by name. Supports system apps (Settings, Task Manager, Calculator), browsers (Chrome, Edge), and installed software. Auto-detects application paths and handles Windows URI schemes for system settings.",
+        "operationId": "openApplication",
+        "tags": ["Windows Control"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["app_name"],
+                "properties": {
+                  "app_name": {
+                    "type": "string",
+                    "description": "Name of the application to open. Examples: 'Chrome', 'Settings', 'Task Manager', 'Calculator', 'WiFi Settings', 'Notepad'",
+                    "example": "Chrome"
+                  },
+                  "wait_for_launch": {
+                    "type": "boolean",
+                    "description": "Wait for application to fully launch before returning",
+                    "default": false
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Application opened successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {"type": "boolean"},
+                    "app_name": {"type": "string"},
+                    "process_id": {"type": "integer"},
+                    "message": {"type": "string"}
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Application not found"
+          },
+          "500": {
+            "description": "Failed to launch application"
+          }
+        }
+      }
+    },
+    "/windows/open-folder": {
+      "post": {
+        "summary": "Open Windows Folder",
+        "description": "Opens system folders or any directory path in Windows Explorer. Supports common locations (Downloads, Documents, Desktop) and full paths. Automatically resolves user-specific paths.",
+        "operationId": "openFolder",
+        "tags": ["Windows Control"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["folder_path"],
+                "properties": {
+                  "folder_path": {
+                    "type": "string",
+                    "description": "Path or name of folder to open. Supports: 'Downloads', 'Documents', 'Desktop', 'Pictures', or full paths like 'C:\\Users\\...'",
+                    "example": "Downloads"
+                  },
+                  "select_file": {
+                    "type": "string",
+                    "description": "Optional: Select a specific file within the folder",
+                    "nullable": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Folder opened successfully"
+          },
+          "404": {
+            "description": "Folder not found"
+          }
+        }
+      }
+    },
+    "/windows/click-icon": {
+      "post": {
+        "summary": "Click Desktop Icon",
+        "description": "Finds and clicks a desktop icon using computer vision. Moves the cursor to the icon location and performs a double-click to launch the application.",
+        "operationId": "clickDesktopIcon",
+        "tags": ["Windows Control"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["icon_name"],
+                "properties": {
+                  "icon_name": {
+                    "type": "string",
+                    "description": "Name of the desktop icon to click (e.g., 'Recycle Bin', 'Chrome', 'This PC')",
+                    "example": "Recycle Bin"
+                  },
+                  "click_type": {
+                    "type": "string",
+                    "enum": ["single", "double"],
+                    "description": "Type of click to perform",
+                    "default": "double"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Icon clicked successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {"type": "boolean"},
+                    "icon_name": {"type": "string"},
+                    "coordinates": {
+                      "type": "object",
+                      "properties": {
+                        "x": {"type": "integer"},
+                        "y": {"type": "integer"}
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Desktop icon not found"
+          }
+        }
+      }
+    },
+    "/windows/run-command": {
+      "post": {
+        "summary": "Execute Terminal Command",
+        "description": "Runs PowerShell or CMD commands on the Windows system. Returns command output and exit code. Use for system operations, network diagnostics, or script execution.",
+        "operationId": "runCommand",
+        "tags": ["Windows Control"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["command"],
+                "properties": {
+                  "command": {
+                    "type": "string",
+                    "description": "Command to execute. Can be PowerShell or CMD command.",
+                    "example": "ipconfig /all"
+                  },
+                  "shell_type": {
+                    "type": "string",
+                    "enum": ["cmd", "powershell"],
+                    "description": "Type of shell to use",
+                    "default": "cmd"
+                  },
+                  "timeout": {
+                    "type": "integer",
+                    "description": "Maximum execution time in seconds",
+                    "default": 30
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Command executed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {"type": "boolean"},
+                    "output": {"type": "string"},
+                    "error": {"type": "string"},
+                    "exit_code": {"type": "integer"}
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid command or dangerous operation blocked"
+          }
+        }
+      }
+    },
+    "/windows/kill-process": {
+      "post": {
+        "summary": "Terminate Process",
+        "description": "Forcefully terminates a running Windows process by name or PID. Use when applications are frozen or need to be stopped.",
+        "operationId": "killProcess",
+        "tags": ["Windows Control"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "process_name": {
+                    "type": "string",
+                    "description": "Name of the process to terminate (e.g., 'chrome.exe', 'notepad')",
+                    "example": "chrome.exe"
+                  },
+                  "process_id": {
+                    "type": "integer",
+                    "description": "Process ID (PID) to terminate",
+                    "nullable": true
+                  },
+                  "force": {
+                    "type": "boolean",
+                    "description": "Force termination without graceful shutdown",
+                    "default": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Process terminated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {"type": "boolean"},
+                    "process_name": {"type": "string"},
+                    "processes_killed": {"type": "integer"}
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Process not found"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": {"type": "string"},
+          "message": {"type": "string"},
+          "timestamp": {"type": "string", "format": "date-time"}
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-API-Key",
+        "description": "API key for authenticating requests to Kore Windows Control API"
+      }
+    }
+  },
+  "security": [
+    {"ApiKeyAuth": []}
+  ],
+  "tags": [
+    {
+      "name": "Windows Control",
+      "description": "Operations for controlling Windows applications, processes, and desktop interactions"
+    }
+  ]
+}

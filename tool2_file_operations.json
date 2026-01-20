@@ -1,0 +1,390 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Kore File Operations API",
+    "description": "Advanced file and folder management API for Windows systems. Supports creation, deletion, organization, search, and intelligent file operations with AI-powered categorization.",
+    "version": "1.0.0",
+    "contact": {
+      "name": "Kore Development Team",
+      "email": "support@kore-assistant.com"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:5000/api/v1",
+      "description": "Local Kore API Server"
+    }
+  ],
+  "paths": {
+    "/files/search": {
+      "post": {
+        "summary": "Search for Files",
+        "description": "Searches the entire Windows file system for files matching the given pattern. Supports wildcards, file extensions, and searches across user directories, program files, and system folders. Returns file paths and metadata.",
+        "operationId": "searchFiles",
+        "tags": ["File Operations"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["filename"],
+                "properties": {
+                  "filename": {
+                    "type": "string",
+                    "description": "File name or pattern to search for. Supports wildcards like *.py, report*.pdf",
+                    "example": "report.pdf"
+                  },
+                  "search_locations": {
+                    "type": "array",
+                    "items": {"type": "string"},
+                    "description": "Optional: Specific folders to search in. If not provided, searches common locations.",
+                    "example": ["Desktop", "Documents", "Downloads"]
+                  },
+                  "max_results": {
+                    "type": "integer",
+                    "description": "Maximum number of results to return",
+                    "default": 10
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Search completed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {"type": "boolean"},
+                    "results_found": {"type": "integer"},
+                    "files": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "path": {"type": "string"},
+                          "name": {"type": "string"},
+                          "size_bytes": {"type": "integer"},
+                          "modified_date": {"type": "string"}
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/files/create": {
+      "post": {
+        "summary": "Create New File",
+        "description": "Creates a new file at the specified path with optional content. Automatically creates parent directories if they don't exist. Supports smart path resolution (e.g., 'Desktop/notes.txt' automatically expands to full user path).",
+        "operationId": "createFile",
+        "tags": ["File Operations"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["file_path"],
+                "properties": {
+                  "file_path": {
+                    "type": "string",
+                    "description": "Path where file should be created. Can use shortcuts like 'Desktop/', 'Documents/', or full paths.",
+                    "example": "Desktop/notes.txt"
+                  },
+                  "content": {
+                    "type": "string",
+                    "description": "Initial content to write to the file",
+                    "default": ""
+                  },
+                  "overwrite": {
+                    "type": "boolean",
+                    "description": "Overwrite if file already exists",
+                    "default": false
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "File created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {"type": "boolean"},
+                    "file_path": {"type": "string"},
+                    "size_bytes": {"type": "integer"}
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "File already exists and overwrite=false"
+          }
+        }
+      }
+    },
+    "/files/delete": {
+      "delete": {
+        "summary": "Delete File or Folder",
+        "description": "Permanently deletes a file or folder. For folders, recursively deletes all contents. Includes safety check to prevent accidental deletion of system files.",
+        "operationId": "deleteFile",
+        "tags": ["File Operations"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["file_path"],
+                "properties": {
+                  "file_path": {
+                    "type": "string",
+                    "description": "Path to file or folder to delete",
+                    "example": "Desktop/old_file.txt"
+                  },
+                  "confirm": {
+                    "type": "boolean",
+                    "description": "Confirmation flag to prevent accidental deletion",
+                    "default": false
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "File deleted successfully"
+          },
+          "400": {
+            "description": "Confirmation required or dangerous path blocked"
+          },
+          "404": {
+            "description": "File not found"
+          }
+        }
+      }
+    },
+    "/files/organize": {
+      "post": {
+        "summary": "Organize Files by Type",
+        "description": "Automatically organizes files in a folder by creating subfolders based on file types (Images, Videos, Documents, Code, Archives, etc.) and moving files into appropriate categories. Uses intelligent categorization based on file extensions.",
+        "operationId": "organizeFiles",
+        "tags": ["File Operations"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["folder_path"],
+                "properties": {
+                  "folder_path": {
+                    "type": "string",
+                    "description": "Path to folder that needs organization. Common: 'Downloads', 'Desktop', 'Documents'",
+                    "example": "Downloads"
+                  },
+                  "categories": {
+                    "type": "array",
+                    "items": {"type": "string"},
+                    "description": "Custom categories to create. If not provided, uses default categories.",
+                    "example": ["Images", "Videos", "Documents", "Code", "Others"]
+                  },
+                  "preview_only": {
+                    "type": "boolean",
+                    "description": "Show what would be organized without actually moving files",
+                    "default": false
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Files organized successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {"type": "boolean"},
+                    "files_moved": {"type": "integer"},
+                    "categories_created": {
+                      "type": "array",
+                      "items": {"type": "string"}
+                    },
+                    "summary": {
+                      "type": "object",
+                      "additionalProperties": {"type": "integer"}
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/files/copy": {
+      "post": {
+        "summary": "Copy File or Folder",
+        "description": "Copies a file or entire folder from source to destination. Preserves file metadata and handles duplicate names by appending numbers.",
+        "operationId": "copyFile",
+        "tags": ["File Operations"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["source", "destination"],
+                "properties": {
+                  "source": {
+                    "type": "string",
+                    "description": "Source file or folder path",
+                    "example": "Desktop/report.pdf"
+                  },
+                  "destination": {
+                    "type": "string",
+                    "description": "Destination path (can be folder or full file path)",
+                    "example": "Documents/"
+                  },
+                  "preserve_metadata": {
+                    "type": "boolean",
+                    "description": "Preserve file timestamps and attributes",
+                    "default": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "File copied successfully"
+          }
+        }
+      }
+    },
+    "/files/move": {
+      "post": {
+        "summary": "Move File or Folder",
+        "description": "Moves a file or folder from source to destination. Essentially a cut-paste operation.",
+        "operationId": "moveFile",
+        "tags": ["File Operations"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["source", "destination"],
+                "properties": {
+                  "source": {
+                    "type": "string",
+                    "description": "Source file or folder path",
+                    "example": "Desktop/old_project"
+                  },
+                  "destination": {
+                    "type": "string",
+                    "description": "Destination path",
+                    "example": "Documents/Archive/"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "File moved successfully"
+          }
+        }
+      }
+    },
+    "/files/list": {
+      "get": {
+        "summary": "List Directory Contents",
+        "description": "Lists all files and folders in the specified directory with metadata (size, type, modified date).",
+        "operationId": "listFiles",
+        "tags": ["File Operations"],
+        "parameters": [
+          {
+            "name": "directory",
+            "in": "query",
+            "required": true,
+            "description": "Directory path to list contents of",
+            "schema": {"type": "string"},
+            "example": "Downloads"
+          },
+          {
+            "name": "include_hidden",
+            "in": "query",
+            "description": "Include hidden files in listing",
+            "schema": {"type": "boolean", "default": false}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Directory listing retrieved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {"type": "boolean"},
+                    "directory": {"type": "string"},
+                    "total_items": {"type": "integer"},
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "name": {"type": "string"},
+                          "type": {"type": "string", "enum": ["file", "folder"]},
+                          "size_bytes": {"type": "integer"},
+                          "modified": {"type": "string"}
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "ApiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-API-Key"
+      }
+    }
+  },
+  "security": [{"ApiKeyAuth": []}],
+  "tags": [
+    {
+      "name": "File Operations",
+      "description": "Comprehensive file and folder management operations"
+    }
+  ]
+}

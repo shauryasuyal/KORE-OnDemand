@@ -1,0 +1,25 @@
+{
+  "api_key": "YOUR_ONDEMAND_API_KEY_HERE",
+  "external_user_id": "auto-generated-on-first-run",
+  
+  "agents": {
+    "agent1_command_router": "PASTE_AGENT_1_ID_HERE",
+    "agent2_file_navigator": "PASTE_AGENT_2_ID_HERE",
+    "agent3_system_monitor": "PASTE_AGENT_3_ID_HERE",
+    "agent4_web_research": "PASTE_AGENT_4_ID_HERE",
+    "agent5_code_assistant": "PASTE_AGENT_5_ID_HERE",
+    "agent6_visual_ai": "PASTE_AGENT_6_ID_HERE",
+    "agent7_conversational": "PASTE_AGENT_7_ID_HERE"
+  },
+  
+  "tools": {
+    "tool1_windows_control": "PASTE_TOOL_1_ID_HERE",
+    "tool2_file_operations": "PASTE_TOOL_2_ID_HERE",
+    "tool3_system_query": "PASTE_TOOL_3_ID_HERE"
+  },
+  
+  "response_mode": "stream",
+  "temperature": 0.7,
+  
+  "_comment": "Fill in your OnDemand API key and agent/tool IDs from the OnDemand platform"
+}
