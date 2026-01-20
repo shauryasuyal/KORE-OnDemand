@@ -57,7 +57,7 @@ Kore performs complex file operations and system cleaning.
 * **Workflow:** The **File Operations API** scans the desktop and segregates files by metadata types (Images, Docs), while **Agent 2** handles universal search.
 
 ---
-Agent 1: KERBEROS
+Agent 1: Command Router
 AgentID: 696f2b3a11fbb0c8c542090d
 
 Agent 2: File Manager
