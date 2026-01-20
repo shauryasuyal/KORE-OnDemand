@@ -57,6 +57,26 @@ Kore performs complex file operations and system cleaning.
 * **Workflow:** The **File Operations API** scans the desktop and segregates files by metadata types (Images, Docs), while **Agent 2** handles universal search.
 
 ---
+Agent 1: KERBEROS
+AgentID: 696f2b3a11fbb0c8c542090d
+
+Agent 2: File Manager
+AgentID: 696f3b3172f2250a2db6cb08
+
+Agent 3: System Monitor
+AgentID: 696f0ecab2795e4f7116f89e
+
+Agent 4: Web Researcher
+AgentID: 696f3ac424e974a9ab7c4ba5
+
+Agent 5: Assistant Coder
+AgentID: 696f3b9211
+
+Agent 6: Visual AI
+AgentID: 696f3b9211fbb0c8c5420913
+
+Agent 7: Automatic DLL Error Fixer
+AgentID: 696f29b011fbb0c8c542090c
 
 ## Links & Demo
 
@@ -64,14 +84,22 @@ Kore performs complex file operations and system cleaning.
 
 ## Screenshots
 
-**Overlay**
-![App Screenshot](https://i.postimg.cc/NGVpwJQL/6d9293b2-309c-459b-b6bc-6eaf117770d1.png)
+**OnDemand Workflow**
+![App Screenshot](https://i.postimg.cc/Xqzjbhx5/Whats-App-Image-2026-01-20-at-2-57-34-PM.jpg)
+
+**OnDemand Agents**
+![App Screenshot](https://i.postimg.cc/t4HdNrQ2/Whats-App-Image-2026-01-20-at-3-03-05-PM.jpg)
+
+**OnDemand Tools**
+![App Screenshot](https://i.postimg.cc/8PCdKFjv/Whats-App-Image-2026-01-20-at-3-14-58-PM.jpg)
 
 **Speech Recognition Active**
 ![App Screenshot](https://i.postimg.cc/xjkBHbCd/5444ac09-6703-444a-9bc1-4ce0b678f09b.png)
 
 **Fixing DLL issues (Powered by Agent 7)**
 ![App Screenshot](https://i.postimg.cc/QxF5TZ2v/Screenshot-2026-01-20-at-2-27-30-PM.png)
+
+
 
 ## Authors
 * [@shauryasuyal](https://github.com/shauryasuyal)
