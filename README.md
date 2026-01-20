@@ -60,7 +60,7 @@ Kore performs complex file operations and system cleaning.
 
 ## Links & Demo
 
-* [cite_start]**Demo Video:** [Watch on Vimeo](https://vimeo.com/manage/videos/1156404546) - *Demonstrates core functionality and agent interactions *
+**Demo Video:** [Watch on Vimeo](https://vimeo.com/manage/videos/1156404546) - *Demonstrates core functionality and agent interactions *
 
 ## Screenshots
 
