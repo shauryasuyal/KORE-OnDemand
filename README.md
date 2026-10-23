@@ -1,5 +1,7 @@
 # Kore: The OnDemand AI Desktop Assistant
 
+> 🏆 **Winner, OnDemand Track, brAInwave 2.0 National Hackathon** (top 5 of 5,000+ participants)
+
 **Kore** is an advanced AI-powered desktop assistant for Windows that brings a friendly, intelligent companion to your computer. Built explicitly for the **OnDemand Track**, Kore combines natural language understanding with deep system integration, controlling your PC through a sophisticated **Multi-Agent Swarm**.
 
 ## OnDemand Track Compliance & Architecture
